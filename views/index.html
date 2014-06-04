@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Synchronized Slideshow</title>
+<script src="jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var curslide = {{=it.slide}}; // the slide the server is currently on.
+
+$(function() {
+    $('#slide' + curslide).css('left',0);
+
+    $('#next').click(function() {
+        $.post('/next');
+    });
+});
+
+var socket = io.connect('http://192.168.10.1:70');
+//var socket = io.connect('http://10.0.110.32:70');
+socket.on('slide', function(slide) {
+    $('#slide' + curslide).css('left',0).show() //.animate({left:-1080}, 1920);
+    $('#slide' + slide).css('left',1080).show() //.animate({left:0}, 1920);
+    curslide = slide;
+});
+</script>
+<style>
+#slideshow, .slide { width:1080px; height:1920px; overflow:hidden; position:relative; }
+.slide { position:absolute; top:0px; left:1080px; }
+</style>
+</head>
+<body>
+    <div id="slideshow">
+        {{~it.slides :url:i}}
+            <div id="slide{{=i}}" class="slide"><img src="{{=url}}"></div>
+        {{~}}
+    </div>
+    <button id="next">Next &gt;</button>
+</body>
+</html>
+
